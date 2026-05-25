@@ -57,4 +57,4 @@ class Veiculo(db.Model):
       "preco": self.preco,
       "quilometragem": self.quilometragem,
       "status_disponibilidade": self.status_disponibilidade
-        }
+    }

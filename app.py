@@ -10,6 +10,7 @@ db.init_app(app)
 with app.app_context():
   db.create_all()
 
+
 # --- ROTAS DE CADASTRO AUXILIARES (Marca e Modelo) ---
 #POST marcas
 @app.route('/marcas', methods=['POST'])
