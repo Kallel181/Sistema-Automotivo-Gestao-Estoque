@@ -97,7 +97,17 @@ def listar_modelos():
 
 
 
-
+@app.route('/modelos/marca/<string:nome_marca>', methods=['GET'])
+def listar_modelos_por_marca(nome_marca):
+  # Busca a marca ignorando maiúsculas/minúsculas
+  marca = Marca.query.filter(Marca.nome_marca.ilike(nome_marca)).first()
+    
+  if not marca:
+    return jsonify({"erro": f"Marca '{nome_marca}' não encontrada."}), 404
+        
+  # Retorna apenas os modelos atrelados a essa marca específica
+  modelos = Modelo.query.filter_by(marca_id=marca.id).all()
+  return jsonify([m.to_dict() for m in modelos]), 200
 
 
 
