@@ -6,7 +6,9 @@ class Marca(db.Model):
   __tablename__ = 'marcas'
   
   id = db.Column(db.Integer, primary_key=True)
-  nome_marca = db.Column(db.String(50), nullable=False, unique=True)
+  
+  #Com unique=True não precisamos verificar entrada na rota
+  nome_marca = db.Column(db.String(50), nullable=False, unique=True) 
   
   # Relacionamento para facilitar a busca de modelos a partir da marca
   modelos = db.relationship('Modelo', backref='marca', lazy=True)
@@ -15,6 +17,7 @@ class Marca(db.Model):
     return {"id": self.id, "nome_marca": self.nome_marca}
 
 
+#modelo é atrelado com Marca, porem a verificação se a marca existe é feita pela rota
 class Modelo(db.Model):
   __tablename__ = 'modelos'
     
