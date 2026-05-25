@@ -60,27 +60,31 @@ def obter_marca(id):
 def cadastrar_modelo():
   data = request.get_json()
     
-  # 1. Validação básica de campos obrigatórios
-  if not data or 'nome_modelo' not in data or 'marca_id' not in data:
+  # Agora esperamos 'nome_marca' como string em vez de 'marca_id'
+  if not data or 'nome_modelo' not in data or 'nome_marca' not in data:
     return jsonify({"erro": "Dados inválidos"}), 400
         
-  nome = data['nome_modelo'].strip()
-  id_da_marca = data['marca_id']
+  nome_modelo = data['nome_modelo'].strip()
+  nome_marca = data['nome_marca'].strip()
     
-  # 2. Verifica se a marca informada existe no banco de dados
-  marca_existe = Marca.query.get(id_da_marca)
-  if not marca_existe:
-    return jsonify({"erro": f"Operação abortada. A marca com ID {id_da_marca} não existe no sistema."}), 409
-
-  # 3. Verifica se este modelo já existe cadastrado PARA ESTA mesma marca
-  modelo_duplicado = Modelo.query.filter_by(nome_modelo=nome, marca_id=id_da_marca).first()
+  # 1. Busca a marca por texto no banco de dados (ignorando maiúsculas/minúsculas)
+  marca = Marca.query.filter(Marca.nome_marca.ilike(nome_marca)).first()
+    
+  # 2. Se a marca não existir, o sistema cria ela automaticamente na hora!
+  if not marca:
+    marca = Marca(nome_marca=nome_marca)
+    db.session.add(marca)
+    db.session.flush() # Executa a criação no banco para gerar o ID, mas não finaliza a transação ainda
+    
+  # 3. Agora que temos a garantia do objeto 'marca' (novo ou existente), verificamos duplicidade do modelo
+  modelo_duplicado = Modelo.query.filter_by(nome_modelo=nome_modelo, marca_id=marca.id).first()
   if modelo_duplicado:
-    return jsonify({"erro": f"O modelo '{nome}' já está cadastrado para a marca '{marca_existe.nome_marca}'."}), 409
+    return jsonify({"erro": f"O modelo '{nome_modelo}' já existe para a marca '{marca.nome_marca}'."}), 409
         
-  # Se passou por todas as barreiras, faz a inserção segura
-  novo_modelo = Modelo(nome_modelo=nome, marca_id=id_da_marca)
+  # 4. Cria o modelo usando o ID que o Flask localizou ou gerou
+  novo_modelo = Modelo(nome_modelo=nome_modelo, marca_id=marca.id)
   db.session.add(novo_modelo)
-  db.session.commit()
+  db.session.commit() # Salva tudo de uma vez no MySQL
     
   return jsonify(novo_modelo.to_dict()), 201
 
