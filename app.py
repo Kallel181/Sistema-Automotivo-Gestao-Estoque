@@ -11,6 +11,7 @@ with app.app_context():
   db.create_all()
 
 # --- ROTAS DE CADASTRO AUXILIARES (Marca e Modelo) ---
+#POST marcas
 @app.route('/marcas', methods=['POST'])
 def cadastrar_marca():
   data = request.get_json()
@@ -29,6 +30,30 @@ def cadastrar_marca():
   db.session.add(nova_marca)
   db.session.commit()
   return jsonify(nova_marca.to_dict()), 201
+
+
+# GET Listar todas as marcas
+@app.route('/marcas', methods=['GET'])
+def listar_marcas():
+  marcas = Marca.query.all()
+  # Retorna uma lista de dicionários contendo [{"id": 1, "nome_marca": "Fiat"}, ...]
+  return jsonify([m.to_dict() for m in marcas]), 200
+
+
+# GET Buscar uma marca específica pelo ID
+@app.route('/marcas/<int:id>', methods=['GET'])
+def obter_marca(id):
+  marca = Marca.query.get(id)
+  if not marca:
+    return jsonify({"erro": f"Marca com ID {id} não encontrada."}), 404
+        
+  return jsonify(marca.to_dict()), 200
+
+
+
+
+
+
 
 
 @app.route('/modelos', methods=['POST'])
@@ -73,6 +98,8 @@ def cadastrar_veiculo():
   if not marca_existente:
     return jsonify({"erro": f"A marca '{nome_marca}' não está cadastrada no sistema."}), 409
     
+  
+  
   
   try:
     novo_veiculo = Veiculo(
