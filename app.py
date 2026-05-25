@@ -89,6 +89,21 @@ def cadastrar_modelo():
   return jsonify(novo_modelo.to_dict()), 201
 
 
+@app.route('/modelos', methods=['GET'])
+def listar_modelos():
+  modelos = Modelo.query.all()
+  # Retorna uma lista com [{"id": 1, "nome_modelo": "Uno", "marca": "Fiat"}, ...]
+  return jsonify([m.to_dict() for m in modelos]), 200
+
+
+
+
+
+
+
+
+
+
 # --- ROTAS DO CRUD DE VEÍCULOS ---
 
 # 1. Cadastro de Veículo (POST)
@@ -101,10 +116,8 @@ def cadastrar_veiculo():
   marca_existente = Marca.query.filter_by(nome_marca=nome_marca).first()
   if not marca_existente:
     return jsonify({"erro": f"A marca '{nome_marca}' não está cadastrada no sistema."}), 409
-    
-  
-  
-  
+
+
   try:
     novo_veiculo = Veiculo(
       modelo_id=data['modelo_id'],
