@@ -66,6 +66,14 @@ def cadastrar_modelo():
 @app.route('/veiculos', methods=['POST'])
 def cadastrar_veiculo():
   data = request.get_json()
+    
+  # Busca no banco se já existe uma marca com esse exato nome, caso não exista o carro não é valido
+  nome_marca = data['nome_marca'].strip()  
+  marca_existente = Marca.query.filter_by(nome_marca=nome_marca).first()
+  if not marca_existente:
+    return jsonify({"erro": f"A marca '{nome_marca}' não está cadastrada no sistema."}), 409
+    
+  
   try:
     novo_veiculo = Veiculo(
       modelo_id=data['modelo_id'],
@@ -81,7 +89,7 @@ def cadastrar_veiculo():
     return jsonify(novo_veiculo.to_dict()), 201
   
   except Exception as e:
-      return jsonify({"erro": "Erro ao cadastrar veículo. Verifique os campos e chaves estrangeiras."}), 400
+    return jsonify({"erro": "Erro ao cadastrar veículo. Verifique os campos e chaves estrangeiras."}), 400
 
 # 2. Consulta com Filtros Inteligentes (GET)
 @app.route('/veiculos', methods=['GET'])
