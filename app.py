@@ -17,7 +17,7 @@ with app.app_context():
 def cadastrar_marca():
   data = request.get_json()
   if not data or 'nome_marca' not in data:
-    return jsonify({"erro": "Dados inválidos"}), 400
+    return jsonify({"erro": "Dados invalidos"}), 400
     
   # Remove espaços em branco extras nas pontas para evitar "Fiat " e "Fiat"
   nome = data['nome_marca'].strip()
@@ -25,7 +25,7 @@ def cadastrar_marca():
   # Busca no banco se já existe uma marca com esse exato nome
   marca_existente = Marca.query.filter_by(nome_marca=nome).first()
   if marca_existente:
-    return jsonify({"erro": f"A marca '{nome}' já está cadastrada no sistema."}), 409
+    return jsonify({"erro": f"A marca '{nome}' ja esta cadastrada no sistema."}), 409
         
   nova_marca = Marca(nome_marca=nome)
   db.session.add(nova_marca)
@@ -46,7 +46,7 @@ def listar_marcas():
 def obter_marca(id):
   marca = Marca.query.get(id)
   if not marca:
-    return jsonify({"erro": f"Marca com ID {id} não encontrada."}), 404
+    return jsonify({"erro": f"Marca com ID {id} nao encontrada."}), 404
         
   return jsonify(marca.to_dict()), 200
 
@@ -63,7 +63,7 @@ def cadastrar_modelo():
     
   # Agora esperamos 'nome_marca' como string em vez de 'marca_id'
   if not data or 'nome_modelo' not in data or 'nome_marca' not in data:
-    return jsonify({"erro": "Dados inválidos"}), 400
+    return jsonify({"erro": "Dados invalidos"}), 400
         
   nome_modelo = data['nome_modelo'].strip()
   nome_marca = data['nome_marca'].strip()
@@ -80,7 +80,7 @@ def cadastrar_modelo():
   # 3. Agora que temos a garantia do objeto 'marca' (novo ou existente), verificamos duplicidade do modelo
   modelo_duplicado = Modelo.query.filter_by(nome_modelo=nome_modelo, marca_id=marca.id).first()
   if modelo_duplicado:
-    return jsonify({"erro": f"O modelo '{nome_modelo}' já existe para a marca '{marca.nome_marca}'."}), 409
+    return jsonify({"erro": f"O modelo '{nome_modelo}' ja existe para a marca '{marca.nome_marca}'."}), 409
         
   # 4. Cria o modelo usando o ID que o Flask localizou ou gerou
   novo_modelo = Modelo(nome_modelo=nome_modelo, marca_id=marca.id)
@@ -104,7 +104,7 @@ def listar_modelos_por_marca(nome_marca):
   marca = Marca.query.filter(Marca.nome_marca.ilike(nome_marca)).first()
     
   if not marca:
-    return jsonify({"erro": f"Marca '{nome_marca}' não encontrada."}), 404
+    return jsonify({"erro": f"Marca '{nome_marca}' nao encontrada."}), 404
         
   # Retorna apenas os modelos atrelados a essa marca específica
   modelos = Modelo.query.filter_by(marca_id=marca.id).all()
@@ -126,7 +126,7 @@ def cadastrar_veiculo():
   nome_marca = data['nome_marca'].strip()  
   marca_existente = Marca.query.filter_by(nome_marca=nome_marca).first()
   if not marca_existente:
-    return jsonify({"erro": f"A marca '{nome_marca}' não está cadastrada no sistema."}), 409
+    return jsonify({"erro": f"A marca '{nome_marca}' nao esta cadastrada no sistema."}), 409
 
 
   try:
@@ -144,7 +144,7 @@ def cadastrar_veiculo():
     return jsonify(novo_veiculo.to_dict()), 201
   
   except Exception as e:
-    return jsonify({"erro": "Erro ao cadastrar veículo. Verifique os campos e chaves estrangeiras."}), 400
+    return jsonify({"erro": "Erro ao cadastrar veiculo. Verifique os campos e chaves estrangeiras."}), 400
 
 # 2. Consulta com Filtros Inteligentes (GET)
 @app.route('/veiculos', methods=['GET'])
@@ -199,7 +199,7 @@ def remover_veiculo(id):
   db.session.delete(veiculo)
   db.session.commit()
   
-  return jsonify({"mensagem": f"Veículo ID {id} removido com sucesso do estoque."}), 200
+  return jsonify({"mensagem": f"Veiculo ID {id} removido com sucesso do estoque."}), 200
 
 if __name__ == '__main__':
   app.run(debug=True)
