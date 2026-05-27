@@ -1,0 +1,1 @@
+rootProject.name = "Sistema-Automotivo-Gestao-Estoque"
