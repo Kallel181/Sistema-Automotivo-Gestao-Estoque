@@ -13,7 +13,7 @@ public class Marca {
     @Column(nullable = false, unique = true, length = 50)
     private String nomeMarca;
 
-    @OneToMany(mappedBy = "marca", cascade = CascadeType.ALL, lazy = FetchType.LAZY)
+    @OneToMany(mappedBy = "marca", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Modelo> modelos;
 
     public Marca() {}
